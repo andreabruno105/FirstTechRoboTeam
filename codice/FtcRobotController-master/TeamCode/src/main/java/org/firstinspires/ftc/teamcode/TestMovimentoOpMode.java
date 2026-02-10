@@ -121,6 +121,13 @@ public class TestMovimentoOpMode extends LinearOpMode {
             double backLeftPower   = axial - lateral + yaw;
             double backRightPower  = axial + lateral - yaw;
 
+
+            //Maps the values so they don't exceed 1
+            frontLeftPower = mapFunction(frontLeftPower, 3, 1);
+            frontRightPower = mapFunction(frontRightPower, 3, 1);
+            backLeftPower = mapFunction(backLeftPower, 3, 1);
+            backRightPower = mapFunction(backRightPower, 3, 1);
+
             // Normalize the values so no wheel power exceeds 100%
             // This ensures that the robot maintains the desired motion.
             max = Math.max(Math.abs(frontLeftPower), Math.abs(frontRightPower));
@@ -163,4 +170,15 @@ public class TestMovimentoOpMode extends LinearOpMode {
             telemetry.addData("Back  left/Right", "%4.2f, %4.2f", backLeftPower, backRightPower);
             telemetry.update();
         }
-    }}
+
+    }
+    private double mapFunction(double valore, double maxAttuale, double maxRicavare){
+        double ret;
+
+        ret = (valore * maxRicavare) / maxAttuale;
+        return ret;
+    }
+
+}
+
+
