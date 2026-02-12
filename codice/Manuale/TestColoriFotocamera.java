@@ -19,20 +19,23 @@
  * SOFTWARE.
  */
 
-package org.firstinspires.ftc.robotcontroller.external.samples;
+package org.firstinspires.ftc.teamcode;
 
 import android.util.Size;
 
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.vision.VisionPortal;
-//import org.firstinspires.ftc.vision.opencv.ImageRegion;
 import org.firstinspires.ftc.vision.opencv.ImageRegion;
 import org.firstinspires.ftc.vision.opencv.PredominantColorProcessor;
+
+//Librerie Servo
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.Servo;
 
 /*
  * This OpMode illustrates how to use a video source (camera) as a color sensor
@@ -61,12 +64,26 @@ import org.firstinspires.ftc.vision.opencv.PredominantColorProcessor;
  */
 
 //@Disabled
-@TeleOp(name = "Concept: Vision Color-Sensor", group = "Concept")
-public class ConceptVisionColorSensor extends LinearOpMode
+@TeleOp(name = "ProvaColoriii", group = "Concept")
+public class TestColoriFotocamera extends LinearOpMode
 {
+    //defining a servo
+    static final double INCREMENT   = 0.01;     // amount to slew servo each CYCLE_MS cycle
+    static final int    CYCLE_MS    =   50;     // period of each cycle
+    static final double MAX_POS     =  0.6;     // Maximum rotational position
+    static final double MIN_POS     =  0.35;     // Minimum rotational position
+
+    // Define class members
+    Servo   servo;
+    double  position = 0.5; // Start at halfway position
+
+
     @Override
     public void runOpMode()
     {
+        //instancing the servo
+        servo = hardwareMap.get(Servo.class, "left_hand");
+
         /* Build a "Color Sensor" vision processor based on the PredominantColorProcessor class.
          *
          * - Focus the color sensor by defining a RegionOfInterest (ROI) which you want to inspect.
@@ -90,11 +107,11 @@ public class ConceptVisionColorSensor extends LinearOpMode
          *     eg: Green may be reported as YELLOW, as this may be the "closest" match.
          */
         PredominantColorProcessor colorSensor = new PredominantColorProcessor.Builder()
-                .setRoi(ImageRegion.asUnityCenterCoordinates(-0.1, 0.1, 0.1, -0.1))
+                .setRoi(ImageRegion.asUnityCenterCoordinates(-0.4, 0.4, 0.4, -0.4))
                 .setSwatches(
                         PredominantColorProcessor.Swatch.ARTIFACT_GREEN,
                         PredominantColorProcessor.Swatch.ARTIFACT_PURPLE,
-                        PredominantColorProcessor.Swatch.RED,
+                       PredominantColorProcessor.Swatch.RED,
                         PredominantColorProcessor.Swatch.BLUE,
                         PredominantColorProcessor.Swatch.YELLOW,
                         PredominantColorProcessor.Swatch.BLACK,
@@ -143,6 +160,18 @@ public class ConceptVisionColorSensor extends LinearOpMode
 
             PredominantColorProcessor.Result result = colorSensor.getAnalysis();
 
+            //Moving the servo
+            if(result.closestSwatch == PredominantColorProcessor.Swatch.ARTIFACT_GREEN) {
+                position = MAX_POS;
+            }
+
+            if ( result.closestSwatch == PredominantColorProcessor.Swatch.RED) {
+                position = MIN_POS;
+
+            }
+
+
+
             // Display the Color Sensor result.
             telemetry.addData("Best Match", result.closestSwatch);
             telemetry.addLine(String.format("RGB   (%3d, %3d, %3d)",
@@ -152,6 +181,9 @@ public class ConceptVisionColorSensor extends LinearOpMode
             telemetry.addLine(String.format("YCrCb (%3d, %3d, %3d)",
                                             result.YCrCb[0], result.YCrCb[1], result.YCrCb[2]));
             telemetry.update();
+
+            servo.setPosition(position);
+            sleep(CYCLE_MS);
 
             sleep(20);
         }
