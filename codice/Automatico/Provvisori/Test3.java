@@ -18,8 +18,8 @@ import org.firstinspires.ftc.vision.opencv.ImageRegion;
 import java.util.List;
 
 
-@TeleOp(name = "TensorFlow FTC Example", group = "Vision")
-public class TestPallina extends LinearOpMode {
+@TeleOp(name = "Test3", group = "Vision")
+public class Test3 extends LinearOpMode {
     private DcMotor frontLeftDrive = null;  //  Used to control the left front drive wheel
     private DcMotor frontRightDrive = null;  //  Used to control the right front drive wheel
     private DcMotor backLeftDrive = null;  //  Used to control the left back drive wheel
@@ -65,12 +65,12 @@ public class TestPallina extends LinearOpMode {
 
 
         int centerx=160;
-        int centerTolerance= 20;
+        int centerTolerance= 5;
         int counter=0;
         boolean isCentral=false;
         telemetry.addLine("Premi START");
         telemetry.update();
-
+        boolean pallaDentro=false;
         waitForStart();
         telemetry.addLine("Started");
         telemetry.update();
@@ -101,21 +101,23 @@ public class TestPallina extends LinearOpMode {
 
                     if (blobCenter > centerx + centerTolerance) {
                         moveRobot(0, 0, -0.1);
-                        counter=1;
+                        if(counter%2==0) counter++;
                     }
-                    else if (blobCenter > centerx - centerTolerance) {
+                    else if (blobCenter < centerx - centerTolerance) {
                         moveRobot(0, 0, 0.1);
-                        if(counter==1) counter=2;
+                        if(counter%2==1) counter++;
                     }
-                    if(counter==2){
-
+                    if(counter>4){
+                        moveRobot(0,0,0);
                         isCentral=true;
+                        telemetry.addData("Centrato", " ");
                     }
 
 
                 }
                 else {
-                    moveRobot(0, 0, -0.2);
+                    moveRobot(0, 0, -0.3);
+                    counter=0;
                     break;
                 }
 
@@ -127,6 +129,39 @@ public class TestPallina extends LinearOpMode {
             telemetry.addData("Central: ", isCentral);
             telemetry.update();
             sleep(100);
+            blobCenter=0;
+            boolean empty=false;
+
+            while(!empty&&isCentral) {
+                List<ColorBlobLocatorProcessor.Blob> blobs = colorLocator.getBlobs();
+                ColorBlobLocatorProcessor.Util.filterByCriteria(
+                        ColorBlobLocatorProcessor.BlobCriteria.BY_CONTOUR_AREA,
+                        50, 20000, blobs);  // filter out very small blobs.
+
+                ColorBlobLocatorProcessor.Util.filterByCriteria(
+                        ColorBlobLocatorProcessor.BlobCriteria.BY_CIRCULARITY,
+                        0.6, 1, blobs);
+
+                if (!blobs.isEmpty()) {
+                    Circle circleFit = blobs.get(0).getCircle();
+                    telemetry.addLine(String.format("%5.3f      %3d     (%3d,%3d)",
+                            blobs.get(0).getCircularity(), (int) circleFit.getRadius(), (int) circleFit.getX(), (int) circleFit.getY()));
+
+
+                    blobCenter = circleFit.getY();
+                    moveRobot(0, -0.2, 0);
+                }
+                empty = blobs.isEmpty();
+            }
+
+            if(empty&&isCentral&&!pallaDentro) {
+                moveRobot(0, -0.3, 0);
+                sleep(1500);
+                pallaDentro=true;
+            }
+            moveRobot(0, 0, 0);
+
+
 
 
         }
