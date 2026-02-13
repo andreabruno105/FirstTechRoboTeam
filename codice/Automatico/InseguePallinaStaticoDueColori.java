@@ -17,14 +17,15 @@ import org.firstinspires.ftc.vision.opencv.ImageRegion;
 
 import java.util.List;
 
-@TeleOp(name = "InseguePallinaStatico", group = "Vision")
-public class InseguePallinaStatico extends LinearOpMode {
+@TeleOp(name = "InseguePallinaStaticoDueColori", group = "Vision")
+public class InseguePallinaStaticoDueColori extends LinearOpMode {
 
     private DcMotor frontLeftDrive;
     private DcMotor frontRightDrive;
     private DcMotor backLeftDrive;
     private DcMotor backRightDrive;
 
+    private int ballsNumber=0;
     @SuppressLint("DefaultLocale")
     @Override
     public void runOpMode() {
@@ -43,10 +44,24 @@ public class InseguePallinaStatico extends LinearOpMode {
                 .setMorphOperationType(ColorBlobLocatorProcessor.MorphOperationType.CLOSING)
                 .build();
 
+        ColorBlobLocatorProcessor colorLocatorPurple = new ColorBlobLocatorProcessor.Builder()
+                .setTargetColorRange(ColorRange.BLUE)
+                .setContourMode(ColorBlobLocatorProcessor.ContourMode.EXTERNAL_ONLY)
+                .setRoi(ImageRegion.asUnityCenterCoordinates(-0.75, 0.75, 0.75, -0.75))
+                .setDrawContours(true)
+                .setBoxFitColor(0)
+                .setCircleFitColor(Color.rgb(255, 255, 0))
+                .setBlurSize(5)
+                .setDilateSize(15)
+                .setErodeSize(15)
+                .setMorphOperationType(ColorBlobLocatorProcessor.MorphOperationType.CLOSING)
+                .build();
 
+
+        ColorBlobLocatorProcessor actualColorLocator=colorLocatorGreen;
 
         VisionPortal portal = new VisionPortal.Builder()
-                .addProcessor(colorLocatorGreen)
+                .addProcessor(actualColorLocator)
                 .setCameraResolution(new Size(320, 240))
                 .setCamera(hardwareMap.get(WebcamName.class, "Webcam 1"))
                 .build();
@@ -77,7 +92,7 @@ public class InseguePallinaStatico extends LinearOpMode {
 
             // ===== 1️⃣ CENTRA IL BLOB =====
             if (!isCentral) {
-                isCentral = centerBlob(colorLocatorGreen, centerx, centerTolerance);
+                isCentral = centerBlob(actualColorLocator, centerx, centerTolerance);
             }
 
             telemetry.addData("Central:", isCentral);
@@ -90,7 +105,7 @@ public class InseguePallinaStatico extends LinearOpMode {
 
             while (opModeIsActive() && isCentral && !empty) {
 
-                List<ColorBlobLocatorProcessor.Blob> blobs = colorLocatorGreen.getBlobs();
+                List<ColorBlobLocatorProcessor.Blob> blobs = actualColorLocator.getBlobs();
 
                 ColorBlobLocatorProcessor.Util.filterByCriteria(
                         ColorBlobLocatorProcessor.BlobCriteria.BY_CONTOUR_AREA,
@@ -116,6 +131,26 @@ public class InseguePallinaStatico extends LinearOpMode {
                 moveRobot(0, -0.3, 0);
                 sleep(1500);
                 pallaDentro = true;
+                ballsNumber=(ballsNumber+1)%4;
+            }
+
+            if(ballsNumber==1){
+                actualColorLocator=colorLocatorPurple;
+                portal=new VisionPortal.Builder()
+                        .addProcessor(actualColorLocator)
+                        .setCameraResolution(new Size(320, 240))
+                        .setCamera(hardwareMap.get(WebcamName.class, "Webcam 1"))
+                        .build();
+            }
+            else if(ballsNumber==3){
+                actualColorLocator=colorLocatorGreen;
+                portal=new VisionPortal.Builder()
+                        .addProcessor(actualColorLocator)
+                        .setCameraResolution(new Size(320, 240))
+                        .setCamera(hardwareMap.get(WebcamName.class, "Webcam 1"))
+                        .build();
+                ballsNumber=0;
+
             }
             isCentral=false;
             pallaDentro=false;
@@ -124,7 +159,7 @@ public class InseguePallinaStatico extends LinearOpMode {
     }
 
     // ===== FUNZIONE DI CENTRAGGIO =====
-    private boolean centerBlob(ColorBlobLocatorProcessor colorLocatorGreen, int centerx, int centerTolerance) {
+    private boolean centerBlob(ColorBlobLocatorProcessor actualColorLocator, int centerx, int centerTolerance) {
 
         int counter = 0;
         float blobCenter = 0;
@@ -133,7 +168,7 @@ public class InseguePallinaStatico extends LinearOpMode {
                 (blobCenter < centerx - centerTolerance ||
                         blobCenter > centerx + centerTolerance)) {
 
-            List<ColorBlobLocatorProcessor.Blob> blobs = colorLocatorGreen.getBlobs();
+            List<ColorBlobLocatorProcessor.Blob> blobs = actualColorLocator.getBlobs();
 
             ColorBlobLocatorProcessor.Util.filterByCriteria(
                     ColorBlobLocatorProcessor.BlobCriteria.BY_CONTOUR_AREA,
