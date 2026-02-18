@@ -29,7 +29,6 @@
 
 package org.firstinspires.ftc.teamcode;
 
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -158,10 +157,9 @@ public class RobotAutoDriveToAprilTagOmni extends LinearOpMode
             // Step through the list of detected tags and look for a matching tag
             List<AprilTagDetection> currentDetections = aprilTag.getDetections();
             for (AprilTagDetection detection : currentDetections) {
-
+                desiredTag = detection;
                 // Look to see if we have size info on this tag.
                 if (detection.metadata != null) {
-                    desiredTag = detection;
                     targetFound = true;
                     //  Check to see if we want to track towards this tag.
                     if ((DESIRED_TAG_ID < 0) || (detection.id == DESIRED_TAG_ID)) {
