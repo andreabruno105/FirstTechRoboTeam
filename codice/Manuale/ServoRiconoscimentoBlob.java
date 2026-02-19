@@ -82,7 +82,7 @@ public class ServoRiconoscimentoBlob extends LinearOpMode {
     static final double INCREMENT   = 0.01;     // amount to slew servo each CYCLE_MS cycle
     static final int    CYCLE_MS    =   50;     // period of each cycle
     static final double MAX_POS     =  0.65;     // Maximum rotational position
-    static final double MIN_POS     =  0.30;     // Minimum rotational position
+    static final double MIN_POS     =  0.37;     // Minimum rotational position
 
     //DICHIARAZIONE DELLE VARIABILI DI CONTROLLO
     static double greenY ;
@@ -329,10 +329,25 @@ public class ServoRiconoscimentoBlob extends LinearOpMode {
 
             }
 
-            if(greenY>purpleY)
-                position = MAX_POS;  //SE VIOLA è PIU VICINO IL SERVO SELEZIONA UN LATO
-            else
+
+            if(blobs1.isEmpty()&&blobs.isEmpty()){
+                position = 0.5;
+            }
+
+            else if(blobs.isEmpty())
+                position  = MAX_POS;
+
+            else if(blobs1.isEmpty())
                 position = MIN_POS;
+
+
+            else {
+
+                if (greenY > purpleY)
+                    position = MAX_POS;  //SE VIOLA è PIU VICINO IL SERVO SELEZIONA UN LATO
+                else
+                    position = MIN_POS;
+            }
 
             servo.setPosition(position);
             //sleep(CYCLE_MS);
