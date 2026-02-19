@@ -75,8 +75,27 @@ public class TestMovimentoOpMode extends LinearOpMode {
     private DcMotor backRightDrive = null;
     private DcMotor collector = null;
 
+
+    //INIZIALIZZAZIONE SERVO SELETTORE
+    final double INCREMENT   = 0.01;     // amount to slew servo each CYCLE_MS cycle
+    final int    CYCLE_MS    =   50;     // period of each cycle
+    final double MAX_POS     =  0.65;     // Maximum rotational position
+    final double MIN_POS     =  0.37;     // Minimum rotational position
+
+
+
+
+    // Define class members
+    Servo selector;
+    double  selectorPos = 0.5; // Start at halfway position
+
+
     @Override
     public void runOpMode() {
+
+
+        //DICHIARAZIONE RUOTE CHE RACCOLGONO LE PALLE
+        collector = hardwareMap.get(DcMotor.class, "collector");
 
 
         //DICHIARAZIONE CONTROLLER
@@ -85,13 +104,13 @@ public class TestMovimentoOpMode extends LinearOpMode {
         frontRightDrive = hardwareMap.get(DcMotor.class, "front_right_drive");
         backRightDrive = hardwareMap.get(DcMotor.class, "back_right_drive");
 
-        //DICHIARAZIONE RUOTE CHE RACCOLGONO LE PALLE
-        collector = hardwareMap.get(DcMotor.class, "collector");
 
         frontLeftDrive.setDirection(DcMotor.Direction.REVERSE);
         backLeftDrive.setDirection(DcMotor.Direction.REVERSE);
         frontRightDrive.setDirection(DcMotor.Direction.FORWARD);
-        backRightDrive.setDirection(DcMotor.Direction.FORWARD);
+        backRightDrive.setDirection(DcMotor.Direction.REVERSE);
+
+        collector.setDirection(DcMotor.Direction.REVERSE);
 
         // Wait for the game to start (driver presses START)
         telemetry.addData("Status", "Initialized");
@@ -101,21 +120,13 @@ public class TestMovimentoOpMode extends LinearOpMode {
         runtime.reset();
 
 
-        //INIZIALIZZAZIONE SERVO SELETTORE
-        final double INCREMENT   = 0.01;     // amount to slew servo each CYCLE_MS cycle
-        final int    CYCLE_MS    =   50;     // period of each cycle
-        final double MAX_POS     =  0.65;     // Maximum rotational position
-        final double MIN_POS     =  0.30;     // Minimum rotational position
 
-        // Define class members
-        Servo selector;
-        double  selectorPos = 0.5; // Start at halfway position
 
 
         while (opModeIsActive()) {
 
             //ATTIVAZIONE SERVO
-            selector = hardwareMap.get(Servo.class, "selector");
+            selector = hardwareMap.get(Servo.class, "servo_divisore");
 
 
             double max;
@@ -135,22 +146,24 @@ public class TestMovimentoOpMode extends LinearOpMode {
             //MUOVO SERVO SELETTORE
 
             if(gamepad1.b) {
-                selectorPos += INCREMENT;
-            }
-
-            if (selectorPos >= MAX_POS ) {
                 selectorPos = MAX_POS;
-
             }
+
+
 
             if(gamepad1.a) {
-                selectorPos -= INCREMENT;
-            }
-
-            if (selectorPos <= MIN_POS ) {
                 selectorPos = MIN_POS;
-
             }
+
+            if(gamepad1.x) {
+                collector.setPower(0.6);
+            }
+
+            if(gamepad1.y) {
+                collector.setPower(0);
+            }
+
+
 
 
             // Normalize the values so no wheel power exceeds 100%
@@ -166,22 +179,6 @@ public class TestMovimentoOpMode extends LinearOpMode {
                 backRightPower  /= max;
             }
 
-            // This is test code:
-            //
-            // Uncomment the following code to test your motor directions.
-            // Each button should make the corresponding motor run FORWARD.
-            //   1) First get all the motors to take to correct positions on the robot
-            //      by adjusting your Robot Configuration if necessary.
-            //   2) Then make sure they run in the correct direction by modifying the
-            //      the setDirection() calls above.
-            // Once the correct motors move in the correct direction re-comment this code.
-
-            /*
-            frontLeftPower  = gamepad1.x ? 1.0 : 0.0;  // X gamepad
-            backLeftPower   = gamepad1.a ? 1.0 : 0.0;  // A gamepad
-            frontRightPower = gamepad1.y ? 1.0 : 0.0;  // Y gamepad
-            backRightPower  = gamepad1.b ? 1.0 : 0.0;  // B gamepad
-            */
 
             // Send calculated power to wheels
             frontLeftDrive.setPower(frontLeftPower);
