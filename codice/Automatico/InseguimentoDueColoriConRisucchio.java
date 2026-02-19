@@ -34,7 +34,7 @@ public class InseguimentoDueColoriConRisucchio extends LinearOpMode {
 
     private static final double COLLECTOR_SPEED= 0.4;
     static final double INCREMENT   = 0.01;
-    static final double GREEN_TANK  =  0.65;
+    static final double GREEN_TANK  =  0.75;
     static final double PURLE_TANK  =  0.30;
 
     // ===== NUOVE VARIABILI SERVO =====
@@ -101,6 +101,8 @@ public class InseguimentoDueColoriConRisucchio extends LinearOpMode {
         backRightDrive.setDirection(DcMotor.Direction.FORWARD);
         collector.setDirection(DcMotor.Direction.REVERSE);
 
+        divisor.setPosition(targetPosition);
+
 
 
         int centerx = 160;
@@ -142,7 +144,7 @@ public class InseguimentoDueColoriConRisucchio extends LinearOpMode {
                     moveRobot(0, -0.2, 0);
                 }
 
-                updateServoGradual();   // <-- aggiornamento continuo servo
+                //updateServoGradual();   // <-- aggiornamento continuo servo
             }
 
             if (empty && isCentral && !pallaDentro) {
@@ -158,18 +160,20 @@ public class InseguimentoDueColoriConRisucchio extends LinearOpMode {
                 actualColorLocator=colorLocatorPurple;
                 portal.setProcessorEnabled(actualColorLocator, true);
                 targetPosition = PURLE_TANK;   // <-- cambiato
+                divisor.setPosition(targetPosition);
             }
             else if(ballsNumber==3){
                 actualColorLocator=colorLocatorGreen;
                 portal.setProcessorEnabled(actualColorLocator, true);
                 targetPosition = GREEN_TANK;   // <-- cambiato
+                divisor.setPosition(targetPosition);
                 ballsNumber=0;
             }
 
             isCentral=false;
             pallaDentro=false;
 
-            updateServoGradual();   // <-- aggiornamento servo
+            //updateServoGradual();   // <-- aggiornamento servo
             moveRobot(0, 0, 0);
         }
     }
