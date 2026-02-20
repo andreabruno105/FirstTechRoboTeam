@@ -61,13 +61,13 @@ public class TestMovimentoOpMode extends LinearOpMode {
 
     // Define class members
     Servo selector;
-    CRServo leftServo;
-    CRServo rightServo;
+    Servo leftServo;
+    Servo rightServo;
 
     double  selectorPos = 0.5; // Start at halfway position
 
-    double leftServoPower;
-    double rightServoPower;
+    double leftServoPos = 0;
+    double rightServoPos = 0;
 
     @Override
     public void runOpMode() {
@@ -95,8 +95,8 @@ public class TestMovimentoOpMode extends LinearOpMode {
 
         //ATTIVAZIONE SERVO
         selector = hardwareMap.get(Servo.class, "servo_divisore");
-        leftServo = hardwareMap.get(CRServo.class, "left_servo");
-        rightServo = hardwareMap.get(CRServo.class, "right_servo");
+        leftServo = hardwareMap.get(Servo.class, "left_servo");
+        rightServo = hardwareMap.get(Servo.class, "right_servo");
 
         // Wait for the game to start (driver presses START)
         telemetry.addData("Status", "Initialized");
@@ -146,19 +146,21 @@ public class TestMovimentoOpMode extends LinearOpMode {
                 collector.setPower(0);
             }
 
+
+
             if(gamepad1.left_bumper){
-                leftServoPower = 0.8;
+                leftServoPos = 1;
             }
 
             else
-                leftServoPower = 0;
+                leftServoPos = 0;
 
             if(gamepad1.right_bumper){
-                rightServoPower = 0.8;
+                rightServoPos = 1;
             }
 
             else
-                rightServoPower = 0;
+                rightServoPos = 0;
 
 
 
@@ -184,8 +186,8 @@ public class TestMovimentoOpMode extends LinearOpMode {
 
             // MUOVO IL SERVO
             selector.setPosition(selectorPos);
-            leftServo.setPower(leftServoPower);
-            rightServo.setPower(rightServoPower);
+            leftServo.setPosition(leftServoPos);
+            rightServo.setPosition(rightServoPos);
             sleep(CYCLE_MS);
 
             // Show the elapsed game time and wheel power.
