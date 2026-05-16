@@ -8,9 +8,9 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 
-@TeleOp(name="CodiceManuale", group="Linear OpMode")
+@TeleOp(name="CodiceManualeDoppio", group="Linear OpMode")
 //@Disabled
-public class TestMovimentoOpMode extends LinearOpMode {
+public class TestMovimentoOpModeDoppioController extends LinearOpMode {
 
     // Declare OpMode members for each of the 4 motors.
     private ElapsedTime runtime = new ElapsedTime();
@@ -107,26 +107,26 @@ public class TestMovimentoOpMode extends LinearOpMode {
 
             //MUOVO SERVO SELETTORE
 
-            if(gamepad1.b) {
+            if(gamepad2.b) {
                 selectorPos = MAX_POS;
             }
 
-            if(gamepad1.a) {
+            if(gamepad2.a) {
                 selectorPos = MIN_POS;
             }
 
 
-            if(gamepad1.x) {
+            if(gamepad2.x) {
                 collector.setPower(0.7);
             }
 
-            if(gamepad1.y) {
+            if(gamepad2.y) {
                 collector.setPower(0);
             }
 
 
 
-            if(gamepad1.left_bumper){
+            if(gamepad2.left_bumper){
                 leftServoPos = 1;
             }
 
@@ -135,7 +135,7 @@ public class TestMovimentoOpMode extends LinearOpMode {
             }
 
 
-            if(gamepad1.right_bumper){
+            if(gamepad2.right_bumper){
                 rightServoPos = 1;
             }
 
@@ -143,17 +143,17 @@ public class TestMovimentoOpMode extends LinearOpMode {
                 rightServoPos = 0;
             }
 
-            if(gamepad1.right_trigger_pressed){
+            if(gamepad2.right_trigger_pressed){
                 shootLeft.setPower(0.6);
                 shootRight.setPower(0.6);
             }
 
-            if(gamepad1.left_trigger_pressed){
+            if(gamepad2.left_trigger_pressed){
                 shootLeft.setPower(0);
                 shootRight.setPower(0);
             }
 
-            if(gamepad1.dpad_up){
+            if(gamepad2.dpad_up){
                 shootLeft.setPower(0.7);
                 shootRight.setPower(0.7);
             }
